@@ -86,8 +86,8 @@ class Node:
 	def __init__(self, name, attrs=None, children=None):
 		self.name = name
 		self.children = children or []
-		if attrs:
-			assert type(attrs) is dict
+		# if attrs:
+		# 	assert type(attrs) is dict
 		self.attrs = attrs or {}
 
 	def __getitem__(self, key):
@@ -105,8 +105,9 @@ class Node:
 		output = Node.prefix + '<{}'.format(self.name)
 		if first:
 			Node.prefix = "\n"
-		for attr in self.attrs:
-			output += ' {key}="{value}"'.format(key=attr, value=self.attrs[attr])
+		if hasattr(self.attrs, "__iter__"):
+			for attr in self.attrs:
+				output += ' {key}="{value}"'.format(key=attr, value=self.attrs[attr])
 
 		if self.children:
 			output += '>'

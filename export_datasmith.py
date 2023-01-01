@@ -958,7 +958,10 @@ def get_expression(field, exp_list, force_default=False):
 
 	prev_prefix = expression_log_prefix
 	expression_log_prefix += "|   "
-	return_exp = get_expression_inner(field, exp_list)
+	try:
+		return_exp = get_expression_inner(field, exp_list)
+	except:
+		return_exp = None
 	expression_log_prefix = prev_prefix
 
 	# if a color output is connected to a scalar input, average by using dot product
@@ -1145,11 +1148,11 @@ def get_expression_inner(field, exp_list):
 		return expressions
 	if node.type == 'MIX_SHADER':
 		expressions = get_expression(node.inputs[1], exp_list)
-		assert expressions
+		
+		# assert expressions
 
 		expressions1 = get_expression(node.inputs[2], exp_list)
-		assert expressions1
-
+		# assert expressions1
 		if ("Opacity" in expressions) or ("Opacity" in expressions1):
 			# if there is opacity in any, both should have opacity
 			if "Opacity" not in expressions:
@@ -1386,8 +1389,9 @@ def pbr_nodetree_material(material):
 	reverse_expressions = dict()
 
 	expressions = get_expression(surface_field, exp_list)
-	for key, value in expressions.items():
-		n.push(Node(key, value))
+	if hasattr(expressions, "items"):
+		for key, value in expressions.items():
+			n.push(Node(key, value))
 
 	# apparently this happens automatically, we may want to
 	# choose if we export with masked blend mode
